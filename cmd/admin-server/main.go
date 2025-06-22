@@ -49,7 +49,7 @@ func main() {
 	mux.Handle(path, h)
 
 	// 서버 시작
-	addr := fmt.Sprintf(":%s", cfg.Server.Port)
+	addr := fmt.Sprintf(":%s", cfg.AdminServer.Port)
 	log.Printf("쿠폰 관리 시스템 서버 시작: %s", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("서버 종료: %v", err)

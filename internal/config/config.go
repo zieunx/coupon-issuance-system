@@ -10,9 +10,10 @@ import (
 
 // Config는 애플리케이션의 모든 설정을 담는 구조체
 type Config struct {
-	MySQL  MySQLConfig
-	Redis  RedisConfig
-	Server ServerConfig
+	MySQL       MySQLConfig
+	Redis       RedisConfig
+	AdminServer AdminServerConfig
+	IssueServer AdminServerConfig
 }
 
 // MySQLConfig는 MySQL 데이터베이스 연결 정보를 담는 구조체
@@ -28,7 +29,7 @@ type RedisConfig struct {
 }
 
 // ServerConfig는 서버 관련 설정을 담는 구조체
-type ServerConfig struct {
+type AdminServerConfig struct {
 	Port string
 }
 
@@ -47,8 +48,11 @@ func LoadConfig() {
 			Password: getEnv("REDIS_PASSWORD", ""),
 			DB:       getEnvAsInt("REDIS_DB", 0),
 		},
-		Server: ServerConfig{
-			Port: getEnv("SERVER_PORT", "8080"),
+		AdminServer: AdminServerConfig{
+			Port: getEnv("ADMIN_SERVER_PORT", "8081"),
+		},
+		IssueServer: AdminServerConfig{
+			Port: getEnv("ISSUE_SERVER_PORT", "8082"),
 		},
 	}
 }
