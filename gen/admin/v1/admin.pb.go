@@ -253,7 +253,8 @@ type CouponResponse struct {
 	IssuedAt      *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=issued_at,json=issuedAt,proto3" json:"issued_at,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	CampaignId    string                 `protobuf:"bytes,6,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,6,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	CampaignId    string                 `protobuf:"bytes,7,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -323,6 +324,13 @@ func (x *CouponResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *CouponResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
 func (x *CouponResponse) GetCampaignId() string {
 	if x != nil {
 		return x.CampaignId
@@ -351,7 +359,7 @@ const file_admin_v1_admin_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12,\n" +
 	"\x12coupon_issue_limit\x18\x03 \x01(\x05R\x10couponIssueLimit\x12J\n" +
 	"\x13issuance_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x11issuanceStartTime\x122\n" +
-	"\acoupons\x18\x05 \x03(\v2\x18.admin.v1.CouponResponseR\acoupons\"\x84\x02\n" +
+	"\acoupons\x18\x05 \x03(\v2\x18.admin.v1.CouponResponseR\acoupons\"\x9d\x02\n" +
 	"\x0eCouponResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x127\n" +
@@ -359,8 +367,9 @@ const file_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1f\n" +
-	"\vcampaign_id\x18\x06 \x01(\tR\n" +
+	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x17\n" +
+	"\auser_id\x18\x06 \x01(\tR\x06userId\x12\x1f\n" +
+	"\vcampaign_id\x18\a \x01(\tR\n" +
 	"campaignId2\xb2\x01\n" +
 	"\x0fCampaignService\x12S\n" +
 	"\x0eCreateCampaign\x12\x1f.admin.v1.CreateCampaignRequest\x1a .admin.v1.CreateCampaignResponse\x12J\n" +

@@ -70,6 +70,7 @@ func (s *campaignService) GetCampaign(ctx context.Context, req *GetCampaignReque
 			IssuedAt:   coupon.IssuedAt,
 			CreatedAt:  coupon.CreatedAt,
 			UpdatedAt:  coupon.UpdatedAt,
+			UserID:     coupon.UserID,
 			CampaignID: coupon.CampaignID,
 		})
 	}

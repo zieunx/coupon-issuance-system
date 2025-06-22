@@ -84,6 +84,7 @@ func (s *CampaignHandler) GetCampaign(
 			CreatedAt:  timestamppb.New(c.CreatedAt),
 			UpdatedAt:  timestamppb.New(c.UpdatedAt),
 			CampaignId: c.CampaignID,
+			UserId:     c.UserID,
 		}
 	}
 

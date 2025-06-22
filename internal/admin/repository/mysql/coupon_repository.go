@@ -6,8 +6,6 @@ import (
 	"log"
 
 	"coupon-issuance-system/domain/coupon"
-
-	"github.com/google/uuid"
 )
 
 type CouponRepositoryMySQL struct {
@@ -23,7 +21,7 @@ func (r *CouponRepositoryMySQL) GetCouponsByCampaignID(
 	campaignID string,
 ) ([]*coupon.Coupon, error) {
 	query := `SELECT ` +
-		`id, code, issued_at, created_at, updated_at, campaign_id ` +
+		`id, code, issued_at, created_at, updated_at, user_id, campaign_id ` +
 		`FROM coupon ` +
 		`WHERE campaign_id = ?`
 
@@ -46,6 +44,7 @@ func (r *CouponRepositoryMySQL) GetCouponsByCampaignID(
 			&coupon.IssuedAt,
 			&coupon.CreatedAt,
 			&coupon.UpdatedAt,
+			&coupon.UserID,
 			&coupon.CampaignID,
 		); err != nil {
 			return nil, err
@@ -63,32 +62,7 @@ func (r *CouponRepositoryMySQL) CreateCoupon(
 	ctx context.Context,
 	coupon *coupon.Coupon,
 ) (*string, error) {
-	couponID := uuid.New().String()
-
-	query := `INSERT INTO coupon (id, code, issued_at, created_at, updated_at, campaign_id) ` +
-		`VALUES (?, ?, ?, ?, ?, ?)`
-
-	log.Printf("Executing query: %s with values: %s, %s, %s, %s, %s, %s",
-		query,
-		couponID,
-		coupon.Code,
-		coupon.IssuedAt,
-		coupon.CreatedAt,
-		coupon.UpdatedAt,
-		coupon.CampaignID,
-	)
-
-	_, err := r.db.ExecContext(ctx, query,
-		couponID,
-		coupon.Code,
-		coupon.IssuedAt,
-		coupon.CreatedAt,
-		coupon.UpdatedAt,
-		coupon.CampaignID,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return &couponID, nil
+	// TODO: 구현하지 않음
+	log.Println("CreateCoupon method is not implemented in CouponRepositoryMySQL")
+	return nil, nil
 }
