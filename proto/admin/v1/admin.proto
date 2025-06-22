@@ -9,6 +9,7 @@ option go_package = "coupon-issuance-system/gen/admin/v1;adminv1";
 service CampaignService {
   rpc CreateCampaign (CreateCampaignRequest) returns (CreateCampaignResponse);
   rpc GetCampaign (GetCampaignRequest) returns (GetCampaignResponse);
+  rpc GetSimpleCampaign (GetSimpleCampaignRequest) returns (GetSimpleCampaignResponse);
 }
 
 message CreateCampaignRequest {
@@ -41,4 +42,15 @@ message CouponResponse {
   google.protobuf.Timestamp updated_at = 5;
   string user_id = 6;
   string campaign_id = 7;
+}
+
+message GetSimpleCampaignRequest {
+  string campaign_id = 1;
+}
+
+message GetSimpleCampaignResponse {
+  string campaign_id = 1;
+  string name = 2;
+  int32 coupon_issue_limit = 3;
+  google.protobuf.Timestamp issuance_start_time = 4;
 }

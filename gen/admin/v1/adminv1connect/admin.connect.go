@@ -39,12 +39,16 @@ const (
 	// CampaignServiceGetCampaignProcedure is the fully-qualified name of the CampaignService's
 	// GetCampaign RPC.
 	CampaignServiceGetCampaignProcedure = "/admin.v1.CampaignService/GetCampaign"
+	// CampaignServiceGetSimpleCampaignProcedure is the fully-qualified name of the CampaignService's
+	// GetSimpleCampaign RPC.
+	CampaignServiceGetSimpleCampaignProcedure = "/admin.v1.CampaignService/GetSimpleCampaign"
 )
 
 // CampaignServiceClient is a client for the admin.v1.CampaignService service.
 type CampaignServiceClient interface {
 	CreateCampaign(context.Context, *connect.Request[v1.CreateCampaignRequest]) (*connect.Response[v1.CreateCampaignResponse], error)
 	GetCampaign(context.Context, *connect.Request[v1.GetCampaignRequest]) (*connect.Response[v1.GetCampaignResponse], error)
+	GetSimpleCampaign(context.Context, *connect.Request[v1.GetSimpleCampaignRequest]) (*connect.Response[v1.GetSimpleCampaignResponse], error)
 }
 
 // NewCampaignServiceClient constructs a client for the admin.v1.CampaignService service. By
@@ -70,13 +74,20 @@ func NewCampaignServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(campaignServiceMethods.ByName("GetCampaign")),
 			connect.WithClientOptions(opts...),
 		),
+		getSimpleCampaign: connect.NewClient[v1.GetSimpleCampaignRequest, v1.GetSimpleCampaignResponse](
+			httpClient,
+			baseURL+CampaignServiceGetSimpleCampaignProcedure,
+			connect.WithSchema(campaignServiceMethods.ByName("GetSimpleCampaign")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // campaignServiceClient implements CampaignServiceClient.
 type campaignServiceClient struct {
-	createCampaign *connect.Client[v1.CreateCampaignRequest, v1.CreateCampaignResponse]
-	getCampaign    *connect.Client[v1.GetCampaignRequest, v1.GetCampaignResponse]
+	createCampaign    *connect.Client[v1.CreateCampaignRequest, v1.CreateCampaignResponse]
+	getCampaign       *connect.Client[v1.GetCampaignRequest, v1.GetCampaignResponse]
+	getSimpleCampaign *connect.Client[v1.GetSimpleCampaignRequest, v1.GetSimpleCampaignResponse]
 }
 
 // CreateCampaign calls admin.v1.CampaignService.CreateCampaign.
@@ -89,10 +100,16 @@ func (c *campaignServiceClient) GetCampaign(ctx context.Context, req *connect.Re
 	return c.getCampaign.CallUnary(ctx, req)
 }
 
+// GetSimpleCampaign calls admin.v1.CampaignService.GetSimpleCampaign.
+func (c *campaignServiceClient) GetSimpleCampaign(ctx context.Context, req *connect.Request[v1.GetSimpleCampaignRequest]) (*connect.Response[v1.GetSimpleCampaignResponse], error) {
+	return c.getSimpleCampaign.CallUnary(ctx, req)
+}
+
 // CampaignServiceHandler is an implementation of the admin.v1.CampaignService service.
 type CampaignServiceHandler interface {
 	CreateCampaign(context.Context, *connect.Request[v1.CreateCampaignRequest]) (*connect.Response[v1.CreateCampaignResponse], error)
 	GetCampaign(context.Context, *connect.Request[v1.GetCampaignRequest]) (*connect.Response[v1.GetCampaignResponse], error)
+	GetSimpleCampaign(context.Context, *connect.Request[v1.GetSimpleCampaignRequest]) (*connect.Response[v1.GetSimpleCampaignResponse], error)
 }
 
 // NewCampaignServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -114,12 +131,20 @@ func NewCampaignServiceHandler(svc CampaignServiceHandler, opts ...connect.Handl
 		connect.WithSchema(campaignServiceMethods.ByName("GetCampaign")),
 		connect.WithHandlerOptions(opts...),
 	)
+	campaignServiceGetSimpleCampaignHandler := connect.NewUnaryHandler(
+		CampaignServiceGetSimpleCampaignProcedure,
+		svc.GetSimpleCampaign,
+		connect.WithSchema(campaignServiceMethods.ByName("GetSimpleCampaign")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/admin.v1.CampaignService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CampaignServiceCreateCampaignProcedure:
 			campaignServiceCreateCampaignHandler.ServeHTTP(w, r)
 		case CampaignServiceGetCampaignProcedure:
 			campaignServiceGetCampaignHandler.ServeHTTP(w, r)
+		case CampaignServiceGetSimpleCampaignProcedure:
+			campaignServiceGetSimpleCampaignHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -135,4 +160,8 @@ func (UnimplementedCampaignServiceHandler) CreateCampaign(context.Context, *conn
 
 func (UnimplementedCampaignServiceHandler) GetCampaign(context.Context, *connect.Request[v1.GetCampaignRequest]) (*connect.Response[v1.GetCampaignResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("admin.v1.CampaignService.GetCampaign is not implemented"))
+}
+
+func (UnimplementedCampaignServiceHandler) GetSimpleCampaign(context.Context, *connect.Request[v1.GetSimpleCampaignRequest]) (*connect.Response[v1.GetSimpleCampaignResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("admin.v1.CampaignService.GetSimpleCampaign is not implemented"))
 }

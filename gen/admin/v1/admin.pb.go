@@ -338,6 +338,118 @@ func (x *CouponResponse) GetCampaignId() string {
 	return ""
 }
 
+type GetSimpleCampaignRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId    string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSimpleCampaignRequest) Reset() {
+	*x = GetSimpleCampaignRequest{}
+	mi := &file_admin_v1_admin_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSimpleCampaignRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSimpleCampaignRequest) ProtoMessage() {}
+
+func (x *GetSimpleCampaignRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_v1_admin_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSimpleCampaignRequest.ProtoReflect.Descriptor instead.
+func (*GetSimpleCampaignRequest) Descriptor() ([]byte, []int) {
+	return file_admin_v1_admin_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetSimpleCampaignRequest) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+type GetSimpleCampaignResponse struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	CampaignId        string                 `protobuf:"bytes,1,opt,name=campaign_id,json=campaignId,proto3" json:"campaign_id,omitempty"`
+	Name              string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	CouponIssueLimit  int32                  `protobuf:"varint,3,opt,name=coupon_issue_limit,json=couponIssueLimit,proto3" json:"coupon_issue_limit,omitempty"`
+	IssuanceStartTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=issuance_start_time,json=issuanceStartTime,proto3" json:"issuance_start_time,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *GetSimpleCampaignResponse) Reset() {
+	*x = GetSimpleCampaignResponse{}
+	mi := &file_admin_v1_admin_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSimpleCampaignResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSimpleCampaignResponse) ProtoMessage() {}
+
+func (x *GetSimpleCampaignResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_v1_admin_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSimpleCampaignResponse.ProtoReflect.Descriptor instead.
+func (*GetSimpleCampaignResponse) Descriptor() ([]byte, []int) {
+	return file_admin_v1_admin_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetSimpleCampaignResponse) GetCampaignId() string {
+	if x != nil {
+		return x.CampaignId
+	}
+	return ""
+}
+
+func (x *GetSimpleCampaignResponse) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GetSimpleCampaignResponse) GetCouponIssueLimit() int32 {
+	if x != nil {
+		return x.CouponIssueLimit
+	}
+	return 0
+}
+
+func (x *GetSimpleCampaignResponse) GetIssuanceStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.IssuanceStartTime
+	}
+	return nil
+}
+
 var File_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_admin_v1_admin_proto_rawDesc = "" +
@@ -370,10 +482,20 @@ const file_admin_v1_admin_proto_rawDesc = "" +
 	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x17\n" +
 	"\auser_id\x18\x06 \x01(\tR\x06userId\x12\x1f\n" +
 	"\vcampaign_id\x18\a \x01(\tR\n" +
-	"campaignId2\xb2\x01\n" +
+	"campaignId\";\n" +
+	"\x18GetSimpleCampaignRequest\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\"\xca\x01\n" +
+	"\x19GetSimpleCampaignResponse\x12\x1f\n" +
+	"\vcampaign_id\x18\x01 \x01(\tR\n" +
+	"campaignId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12,\n" +
+	"\x12coupon_issue_limit\x18\x03 \x01(\x05R\x10couponIssueLimit\x12J\n" +
+	"\x13issuance_start_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x11issuanceStartTime2\x90\x02\n" +
 	"\x0fCampaignService\x12S\n" +
 	"\x0eCreateCampaign\x12\x1f.admin.v1.CreateCampaignRequest\x1a .admin.v1.CreateCampaignResponse\x12J\n" +
-	"\vGetCampaign\x12\x1c.admin.v1.GetCampaignRequest\x1a\x1d.admin.v1.GetCampaignResponseB\x88\x01\n" +
+	"\vGetCampaign\x12\x1c.admin.v1.GetCampaignRequest\x1a\x1d.admin.v1.GetCampaignResponse\x12\\\n" +
+	"\x11GetSimpleCampaign\x12\".admin.v1.GetSimpleCampaignRequest\x1a#.admin.v1.GetSimpleCampaignResponseB\x88\x01\n" +
 	"\fcom.admin.v1B\n" +
 	"AdminProtoP\x01Z+coupon-issuance-system/gen/admin/v1;adminv1\xa2\x02\x03AXX\xaa\x02\bAdmin.V1\xca\x02\bAdmin\\V1\xe2\x02\x14Admin\\V1\\GPBMetadata\xea\x02\tAdmin::V1b\x06proto3"
 
@@ -389,31 +511,36 @@ func file_admin_v1_admin_proto_rawDescGZIP() []byte {
 	return file_admin_v1_admin_proto_rawDescData
 }
 
-var file_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_admin_v1_admin_proto_goTypes = []any{
-	(*CreateCampaignRequest)(nil),  // 0: admin.v1.CreateCampaignRequest
-	(*GetCampaignRequest)(nil),     // 1: admin.v1.GetCampaignRequest
-	(*CreateCampaignResponse)(nil), // 2: admin.v1.CreateCampaignResponse
-	(*GetCampaignResponse)(nil),    // 3: admin.v1.GetCampaignResponse
-	(*CouponResponse)(nil),         // 4: admin.v1.CouponResponse
-	(*timestamppb.Timestamp)(nil),  // 5: google.protobuf.Timestamp
+	(*CreateCampaignRequest)(nil),     // 0: admin.v1.CreateCampaignRequest
+	(*GetCampaignRequest)(nil),        // 1: admin.v1.GetCampaignRequest
+	(*CreateCampaignResponse)(nil),    // 2: admin.v1.CreateCampaignResponse
+	(*GetCampaignResponse)(nil),       // 3: admin.v1.GetCampaignResponse
+	(*CouponResponse)(nil),            // 4: admin.v1.CouponResponse
+	(*GetSimpleCampaignRequest)(nil),  // 5: admin.v1.GetSimpleCampaignRequest
+	(*GetSimpleCampaignResponse)(nil), // 6: admin.v1.GetSimpleCampaignResponse
+	(*timestamppb.Timestamp)(nil),     // 7: google.protobuf.Timestamp
 }
 var file_admin_v1_admin_proto_depIdxs = []int32{
-	5, // 0: admin.v1.CreateCampaignRequest.issuance_start_time:type_name -> google.protobuf.Timestamp
-	5, // 1: admin.v1.GetCampaignResponse.issuance_start_time:type_name -> google.protobuf.Timestamp
-	4, // 2: admin.v1.GetCampaignResponse.coupons:type_name -> admin.v1.CouponResponse
-	5, // 3: admin.v1.CouponResponse.issued_at:type_name -> google.protobuf.Timestamp
-	5, // 4: admin.v1.CouponResponse.created_at:type_name -> google.protobuf.Timestamp
-	5, // 5: admin.v1.CouponResponse.updated_at:type_name -> google.protobuf.Timestamp
-	0, // 6: admin.v1.CampaignService.CreateCampaign:input_type -> admin.v1.CreateCampaignRequest
-	1, // 7: admin.v1.CampaignService.GetCampaign:input_type -> admin.v1.GetCampaignRequest
-	2, // 8: admin.v1.CampaignService.CreateCampaign:output_type -> admin.v1.CreateCampaignResponse
-	3, // 9: admin.v1.CampaignService.GetCampaign:output_type -> admin.v1.GetCampaignResponse
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	7,  // 0: admin.v1.CreateCampaignRequest.issuance_start_time:type_name -> google.protobuf.Timestamp
+	7,  // 1: admin.v1.GetCampaignResponse.issuance_start_time:type_name -> google.protobuf.Timestamp
+	4,  // 2: admin.v1.GetCampaignResponse.coupons:type_name -> admin.v1.CouponResponse
+	7,  // 3: admin.v1.CouponResponse.issued_at:type_name -> google.protobuf.Timestamp
+	7,  // 4: admin.v1.CouponResponse.created_at:type_name -> google.protobuf.Timestamp
+	7,  // 5: admin.v1.CouponResponse.updated_at:type_name -> google.protobuf.Timestamp
+	7,  // 6: admin.v1.GetSimpleCampaignResponse.issuance_start_time:type_name -> google.protobuf.Timestamp
+	0,  // 7: admin.v1.CampaignService.CreateCampaign:input_type -> admin.v1.CreateCampaignRequest
+	1,  // 8: admin.v1.CampaignService.GetCampaign:input_type -> admin.v1.GetCampaignRequest
+	5,  // 9: admin.v1.CampaignService.GetSimpleCampaign:input_type -> admin.v1.GetSimpleCampaignRequest
+	2,  // 10: admin.v1.CampaignService.CreateCampaign:output_type -> admin.v1.CreateCampaignResponse
+	3,  // 11: admin.v1.CampaignService.GetCampaign:output_type -> admin.v1.GetCampaignResponse
+	6,  // 12: admin.v1.CampaignService.GetSimpleCampaign:output_type -> admin.v1.GetSimpleCampaignResponse
+	10, // [10:13] is the sub-list for method output_type
+	7,  // [7:10] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_admin_v1_admin_proto_init() }
@@ -427,7 +554,7 @@ func file_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_admin_v1_admin_proto_rawDesc), len(file_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

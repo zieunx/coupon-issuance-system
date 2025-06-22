@@ -2,14 +2,18 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"coupon-issuance-system/domain/campaign"
 	"coupon-issuance-system/domain/coupon"
+
+	"connectrpc.com/connect"
 )
 
 type CampaignService interface {
 	CreateCampaign(ctx context.Context, req *CreateCampaignRequest) (*CampaignMsg, error)
 	GetCampaign(ctx context.Context, req *GetCampaignRequest) (*CampaignMsg, error)
+	GetSimpleCampaign(ctx context.Context, req *GetCampaignRequest) (*CampaignMsg, error)
 }
 
 type campaignService struct {
@@ -50,13 +54,16 @@ func (s *campaignService) CreateCampaign(ctx context.Context, req *CreateCampaig
 
 func (s *campaignService) GetCampaign(ctx context.Context, req *GetCampaignRequest) (*CampaignMsg, error) {
 	// 캠페인 조회
-	campaign, err := s.CampaignRepository.GetCampaignByID(ctx, req.ID)
+	foundCampaign, err := s.CampaignRepository.GetCampaignByID(ctx, req.ID)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, campaign.ErrCampaignNotFound) {
+			return nil, connect.NewError(connect.CodeNotFound, campaign.ErrCampaignNotFound)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	// 쿠폰들 조회
-	coupons, err := s.CouponRepository.GetCouponsByCampaignID(ctx, campaign.ID)
+	coupons, err := s.CouponRepository.GetCouponsByCampaignID(ctx, foundCampaign.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -77,12 +84,32 @@ func (s *campaignService) GetCampaign(ctx context.Context, req *GetCampaignReque
 
 	// 캠페인 메시지 반환
 	return &CampaignMsg{
-		ID:                campaign.ID,
-		Name:              campaign.Name,
-		CouponIssueLimit:  campaign.CouponIssueLimit,
-		IssuanceStartTime: campaign.IssuanceStartTime,
-		CreatedAt:         campaign.CreatedAt,
-		UpdatedAt:         campaign.UpdatedAt,
+		ID:                foundCampaign.ID,
+		Name:              foundCampaign.Name,
+		CouponIssueLimit:  foundCampaign.CouponIssueLimit,
+		IssuanceStartTime: foundCampaign.IssuanceStartTime,
+		CreatedAt:         foundCampaign.CreatedAt,
+		UpdatedAt:         foundCampaign.UpdatedAt,
 		Coupons:           couponMsgs,
+	}, nil
+
+}
+
+func (s *campaignService) GetSimpleCampaign(ctx context.Context, req *GetCampaignRequest) (*CampaignMsg, error) {
+	foundCampaign, err := s.CampaignRepository.GetCampaignByID(ctx, req.ID)
+	if err != nil {
+		if errors.Is(err, campaign.ErrCampaignNotFound) {
+			return nil, connect.NewError(connect.CodeNotFound, campaign.ErrCampaignNotFound)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return &CampaignMsg{
+		ID:                foundCampaign.ID,
+		Name:              foundCampaign.Name,
+		CouponIssueLimit:  foundCampaign.CouponIssueLimit,
+		IssuanceStartTime: foundCampaign.IssuanceStartTime,
+		CreatedAt:         foundCampaign.CreatedAt,
+		UpdatedAt:         foundCampaign.UpdatedAt,
 	}, nil
 }

@@ -90,3 +90,30 @@ func (s *CampaignHandler) GetCampaign(
 
 	return connect.NewResponse(protoResp), nil
 }
+
+func (s *CampaignHandler) GetSimpleCampaign(
+	ctx context.Context,
+	req *connect.Request[adminv1.GetSimpleCampaignRequest],
+) (*connect.Response[adminv1.GetSimpleCampaignResponse], error) {
+	in := req.Msg
+
+	// proto 요청을 내부 요청으로 변환
+	internalReq := &service.GetCampaignRequest{
+		ID: in.GetCampaignId(),
+	}
+
+	// 비즈니스 로직 호출
+	campaignMsg, err := s.service.GetSimpleCampaign(ctx, internalReq)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// proto 응답 생성
+	protoResp := &adminv1.GetSimpleCampaignResponse{
+		CampaignId:        campaignMsg.ID,
+		CouponIssueLimit:  int32(campaignMsg.CouponIssueLimit),
+		IssuanceStartTime: timestamppb.New(campaignMsg.IssuanceStartTime),
+	}
+
+	return connect.NewResponse(protoResp), nil
+}

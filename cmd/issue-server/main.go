@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 
+	"coupon-issuance-system/gen/admin/v1/adminv1connect"
 	issuev1connect "coupon-issuance-system/gen/issue/v1/issuev1connect"
 	"coupon-issuance-system/internal/config"
 	"coupon-issuance-system/internal/config/database"
 	"coupon-issuance-system/internal/interceptor"
+	"coupon-issuance-system/internal/issue/client"
 	"coupon-issuance-system/internal/issue/handler"
 	"coupon-issuance-system/internal/issue/repository/mysql"
 	"coupon-issuance-system/internal/issue/service"
@@ -33,9 +35,14 @@ func main() {
 	}
 
 	// 의존성 주입
-	campaignRepository := mysql.NewCampaignRepositoryMySQL(db)
+	// gRPC 클라이언트 생성
+	adminGRPCClient := adminv1connect.NewCampaignServiceClient(
+		http.DefaultClient,
+		"http://localhost:8081", // 실제 Admin 서버 주소
+	)
+	campaignClient := client.NewCampaignClient(adminGRPCClient)
 	couponRepository := mysql.NewCouponRepositoryMySQL(db)
-	svc := service.NewIssueService(campaignRepository, couponRepository)
+	svc := service.NewIssueService(campaignClient, couponRepository)
 	server := handler.NewIssueHandler(svc)
 
 	// ConnectRPC 핸들러 설정

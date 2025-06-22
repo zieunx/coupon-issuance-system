@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 
 	"coupon-issuance-system/domain/campaign"
@@ -62,17 +63,20 @@ func (r *CampaignRepositoryMySQL) GetCampaignByID(
 	log.Printf("Executing query: %s with id: %s", query, id)
 
 	row := r.db.QueryRowContext(ctx, query, id)
-	var campaign campaign.Campaign
+	var foundCampaign campaign.Campaign
 	err := row.Scan(
-		&campaign.ID,
-		&campaign.Name,
-		&campaign.CouponIssueLimit,
-		&campaign.IssuanceStartTime,
-		&campaign.CreatedAt,
-		&campaign.UpdatedAt,
+		&foundCampaign.ID,
+		&foundCampaign.Name,
+		&foundCampaign.CouponIssueLimit,
+		&foundCampaign.IssuanceStartTime,
+		&foundCampaign.CreatedAt,
+		&foundCampaign.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, campaign.ErrCampaignNotFound
+		}
 		return nil, err
 	}
-	return &campaign, nil
+	return &foundCampaign, nil
 }
