@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package admin.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "coupon-issuance-system/gen/admin/v1;adminv1";
+
+service CampaignService {
+  rpc CreateCampaign (CreateCampaignRequest) returns (CreateCampaignResponse);
+  rpc GetCampaign (GetCampaignRequest) returns (GetCampaignResponse);
+}
+
+message CreateCampaignRequest {
+  string name = 1;
+  int32 coupon_issue_limit = 2;
+  google.protobuf.Timestamp issuance_start_time = 3;
+}
+
+message GetCampaignRequest {
+  string campaign_id = 1;
+}
+
+message CreateCampaignResponse {
+  string campaign_id = 1;
+}
+
+message GetCampaignResponse {
+  string campaign_id = 1;
+  string name = 2;
+  int32 coupon_issue_limit = 3;
+  google.protobuf.Timestamp issuance_start_time = 4;
+  repeated CouponResponse coupons = 5;
+}
+
+message CouponResponse {
+  string id = 1;
+  string code = 2;
+  google.protobuf.Timestamp issued_at = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  string campaign_id = 6;
+}

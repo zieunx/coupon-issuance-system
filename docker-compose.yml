@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: coupon_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: coupondb
+      MYSQL_USER: coupon
+      MYSQL_PASSWORD: coupon123
+    ports:
+      - "3306:3306"
