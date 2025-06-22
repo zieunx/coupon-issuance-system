@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package issue.v1;
+
+option go_package = "coupon-issuance-system/gen/issue/v1;issuev1";
+
+service IssueService {
+  rpc IssueCoupon (IssueCouponRequest) returns (IssueCouponResponse);
+}
+
+message IssueCouponRequest {
+  string campaign_id = 1;
+  string user_id = 2;
+}
+
+message IssueCouponResponse {
+  string coupon_id = 1;
+}
