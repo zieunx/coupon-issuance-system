@@ -27,6 +27,12 @@ func main() {
 		log.Fatalf("DB 연결 실패: %v", err)
 	}
 
+	// Redis 연결
+	rdb, err := database.ConnectRedis(&cfg.Redis)
+	if err != nil {
+		log.Fatalf("Redis 연결 실패: %v", err)
+	}
+
 	// 테이블 생성
 	if err := database.EnsureTables(db); err != nil {
 		log.Fatalf("테이블 생성 실패: %v", err)
@@ -35,7 +41,7 @@ func main() {
 	// 의존성 주입
 	campaignRepository := mysql.NewCampaignRepositoryMySQL(db)
 	couponRepository := mysql.NewCouponRepositoryMySQL(db)
-	svc := service.NewCampaignService(campaignRepository, couponRepository)
+	svc := service.NewCampaignService(campaignRepository, couponRepository, rdb)
 	server := handler.NewCampaignHandler(svc)
 
 	// ConnectRPC 핸들러 설정

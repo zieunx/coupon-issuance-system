@@ -7,9 +7,9 @@ import (
 )
 
 // 한글 28자 + 숫자 10자
-var charset = []rune("가나다라마바사아자차카타파하거너더러머버서어저처커터퍼허0123456789")
+var charset = []rune("가나다라마바사아자차카타파하거너더러머버서어저처커터퍼허고노도로모보소오조초코토포호0123456789")
 
-const codeLength = 7
+const codeLength = 10
 
 var charsetLen = int64(len(charset))
 

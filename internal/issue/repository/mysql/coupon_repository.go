@@ -54,8 +54,6 @@ func (r *CouponRepositoryMySQL) GetCouponsByCampaignID(
 		count++
 	}
 
-	log.Printf("Fetched %d coupons for campaignID: %s", count, campaignID)
-
 	return coupons, nil
 }
 
@@ -67,15 +65,6 @@ func (r *CouponRepositoryMySQL) CreateCoupon(
 
 	query := `INSERT INTO coupon (id, code, issued_at, user_id, campaign_id) ` +
 		`VALUES (?, ?, ?, ?, ?)`
-
-	log.Printf("Executing query: %s with values: %s, %s, %s, %s, %s",
-		query,
-		couponID,
-		coupon.Code,
-		coupon.IssuedAt,
-		coupon.UserID,
-		coupon.CampaignID,
-	)
 
 	_, err := r.db.ExecContext(ctx, query,
 		couponID,

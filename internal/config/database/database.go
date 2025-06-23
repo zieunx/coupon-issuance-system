@@ -5,10 +5,12 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"coupon-issuance-system/internal/config"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/redis/go-redis/v9"
 )
 
 // ConnectDB는 DB 연결을 담당
@@ -18,6 +20,10 @@ func ConnectDB(config *config.MySQLConfig) (*sql.DB, error) {
 		return nil, err
 	}
 
+	db.SetMaxOpenConns(80)                 // 동시에 열 수 있는 최대 커넥션
+	db.SetMaxIdleConns(40)                 // 대기 커넥션 수 (보통 max의 50%)
+	db.SetConnMaxLifetime(5 * time.Minute) // 오래된 커넥션 정리
+
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, err
 	}
@@ -25,6 +31,22 @@ func ConnectDB(config *config.MySQLConfig) (*sql.DB, error) {
 	log.Printf("DB 연결 성공: %s", config.DSN)
 
 	return db, nil
+}
+
+// ConnectRedis는 Redis 연결을 담당
+func ConnectRedis(cfg *config.RedisConfig) (*redis.Client, error) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     cfg.Address,
+		Password: cfg.Password,
+		DB:       cfg.DB,
+	})
+
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
+		return nil, err
+	}
+
+	log.Printf("Redis 연결 성공: %s", cfg.Address)
+	return rdb, nil
 }
 
 // EnsureTables는 필요한 테이블을 생성

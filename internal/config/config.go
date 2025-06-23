@@ -30,6 +30,7 @@ type RedisConfig struct {
 
 // ServerConfig는 서버 관련 설정을 담는 구조체
 type AdminServerConfig struct {
+	Host string
 	Port string
 }
 
@@ -49,6 +50,7 @@ func LoadConfig() {
 			DB:       getEnvAsInt("REDIS_DB", 0),
 		},
 		AdminServer: AdminServerConfig{
+			Host: getEnv("ADMIN_SERVER_HOST", "localhost"),
 			Port: getEnv("ADMIN_SERVER_PORT", "8081"),
 		},
 		IssueServer: AdminServerConfig{

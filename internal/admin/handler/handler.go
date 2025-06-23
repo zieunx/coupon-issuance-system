@@ -31,7 +31,7 @@ func (s *CampaignHandler) CreateCampaign(
 	internalReq := &service.CreateCampaignRequest{
 		Name:              in.GetName(),
 		CouponIssueLimit:  in.GetCouponIssueLimit(),
-		IssuanceStartTime: in.GetIssuanceStartTime().AsTime(),
+		IssuanceStartTime: in.GetIssuanceStartTime().AsTime().UTC(),
 	}
 
 	// 순수한 비즈니스 로직 호출 (proto 타입 없음)

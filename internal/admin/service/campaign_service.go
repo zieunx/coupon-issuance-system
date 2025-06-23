@@ -2,12 +2,15 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 
 	"coupon-issuance-system/domain/campaign"
 	"coupon-issuance-system/domain/coupon"
 
 	"connectrpc.com/connect"
+	"github.com/redis/go-redis/v9"
 )
 
 type CampaignService interface {
@@ -19,15 +22,18 @@ type CampaignService interface {
 type campaignService struct {
 	CampaignRepository campaign.CampaignRepository
 	CouponRepository   coupon.CouponRepository
+	RedisClient        *redis.Client
 }
 
 func NewCampaignService(
 	campaignRepository campaign.CampaignRepository,
 	couponRepository coupon.CouponRepository,
+	redis *redis.Client,
 ) CampaignService {
 	return &campaignService{
 		CampaignRepository: campaignRepository,
 		CouponRepository:   couponRepository,
+		RedisClient:        redis,
 	}
 }
 
@@ -38,13 +44,25 @@ func (s *campaignService) CreateCampaign(ctx context.Context, req *CreateCampaig
 		IssuanceStartTime: req.IssuanceStartTime,
 	}
 
-	_, err := s.CampaignRepository.CreateCampaign(ctx, newCampaign)
+	campaignId, err := s.CampaignRepository.CreateCampaign(ctx, newCampaign)
 	if err != nil {
 		return nil, err
 	}
 
+	newCampaign.ID = *campaignId // Redis 저장을 위해 ID 설정
+
+	// Redis 저장 (TTL 없이)
+	cacheKey := fmt.Sprintf("campaign:%s", *campaignId)
+	campaignJSON, err := json.Marshal(newCampaign)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.RedisClient.Set(ctx, cacheKey, campaignJSON, 0).Err(); err != nil {
+		return nil, fmt.Errorf("redis 저장 실패: %w", err)
+	}
+
 	return &CampaignMsg{
-		ID:                newCampaign.ID,
+		ID:                *campaignId,
 		CouponIssueLimit:  newCampaign.CouponIssueLimit,
 		IssuanceStartTime: newCampaign.IssuanceStartTime,
 		CreatedAt:         newCampaign.CreatedAt,

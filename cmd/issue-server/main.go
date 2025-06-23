@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"time"
 
 	"coupon-issuance-system/gen/admin/v1/adminv1connect"
 	issuev1connect "coupon-issuance-system/gen/issue/v1/issuev1connect"
@@ -29,36 +31,67 @@ func main() {
 		log.Fatalf("DB 연결 실패: %v", err)
 	}
 
+	// Redis 연결
+	rdb, err := database.ConnectRedis(&cfg.Redis)
+	if err != nil {
+		log.Fatalf("Redis 연결 실패: %v", err)
+	}
+
 	// 테이블 생성
 	if err := database.EnsureTables(db); err != nil {
 		log.Fatalf("테이블 생성 실패: %v", err)
 	}
 
-	// 의존성 주입
-	// gRPC 클라이언트 생성
+	transport := &http.Transport{
+		MaxIdleConns:        100,
+		MaxIdleConnsPerHost: 100,
+		IdleConnTimeout:     30 * time.Second,
+	}
+	httpClient := &http.Client{
+		Transport: transport,
+		Timeout:   3 * time.Second, // 요청당 타임아웃 (적절히 설정)
+	}
+
 	adminGRPCClient := adminv1connect.NewCampaignServiceClient(
-		http.DefaultClient,
-		"http://localhost:8081", // 실제 Admin 서버 주소
+		httpClient,
+		fmt.Sprintf("http://%s:%s", cfg.AdminServer.Host, cfg.AdminServer.Port),
 	)
+
 	campaignClient := client.NewCampaignClient(adminGRPCClient)
 	couponRepository := mysql.NewCouponRepositoryMySQL(db)
-	svc := service.NewIssueService(campaignClient, couponRepository)
-	server := handler.NewIssueHandler(svc)
+
+	campaignCache := service.NewCampaignCache(campaignClient, rdb)
+	limiter := service.NewRedisLimiter(rdb)
+
+	svc := service.NewIssueService(campaignCache, limiter, couponRepository)
+	issueHandler := handler.NewIssueHandler(svc)
 
 	// ConnectRPC 핸들러 설정
 	path, h := issuev1connect.NewIssueServiceHandler(
-		server,
+		issueHandler,
 		connect.WithInterceptors(interceptor.NewLoggingInterceptor()),
 	)
 
-	// HTTP 서버 설정
+	// HTTP mux 설정
 	mux := http.NewServeMux()
 	mux.Handle(path, h)
 
-	// 서버 시작
+	// ✅ 서버 리스너 명시적으로 생성 (backlog 제어 가능)
 	addr := fmt.Sprintf(":%s", cfg.IssueServer.Port)
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		log.Fatalf("서버 Listen 실패: %v", err)
+	}
+
+	server := &http.Server{
+		Handler:      mux,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  30 * time.Second,
+	}
+
 	log.Printf("쿠폰 발급 시스템 서버 시작: %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	if err := server.Serve(ln); err != nil {
 		log.Fatalf("서버 종료: %v", err)
 	}
 }

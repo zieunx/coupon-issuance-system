@@ -1,4 +1,5 @@
-version: '3.8'
+version: "3.8"
+
 services:
   mysql:
     image: mysql:8.0
@@ -10,3 +11,51 @@ services:
       MYSQL_PASSWORD: coupon123
     ports:
       - "3306:3306"
+    networks:
+      - coupon-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - coupon-network
+
+  admin-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TARGET: cmd/admin-server
+    container_name: admin-server
+    env_file:
+      - .env.docker
+    ports:
+      - "${ADMIN_SERVER_PORT}:${ADMIN_SERVER_PORT}"
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - coupon-network
+
+  issue-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TARGET: cmd/issue-server
+    container_name: issue-server
+    env_file:
+      - .env.docker
+    ports:
+      - "${ISSUE_SERVER_PORT}:${ISSUE_SERVER_PORT}"
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - coupon-network
+
+networks:
+  coupon-network:
+    driver: bridge
