@@ -112,3 +112,46 @@ flowchart LR
   - internal/issue/service/limiter.go
   - internal/issue/service/issue_service.go
 
+### 4. 비동기 쿠폰 저장 (미구현)
+
+- **목표**: 쿠폰 발급 처리 후 저장을 비동기로 분리하여 DB 부하 지연 및 재시도 가능한 구조로 설계
+- **현재 상태**: 동기 처리만 구현
+- **아이디어**:
+    - **Redis Stream**
+        - 발급 요청을 Stream에 `XADD`
+        - 별도 컨슈머 그룹이 Stream에서 읽어 DB 또는 영속 스토리지에 저장
+    - **메시지 큐 기반 이벤트 아키텍처**
+        - Kafka / RabbitMQ에 발급 이벤트 발행
+        - 소비자(Worker)가 이벤트 구독 후 저장 및 후속 처리
+    - **장점**
+        - 발급 API 응답 지연 최소화
+        - 장애 복구: 큐에 남은 메시지로 재처리 가능
+        - 확장성: 저장 로직과 발급 로직을 독립적 서비스로 분리
+- **추가 고려사항**:
+    - 메시지 중복 처리(idempotency)
+    - 컨슈머 장애 대비 Dead‐letter Queue
+    - 순서 보장(Partition, Stream Group) 
+
+## 부하 테스트
+
+아래 예시에서 **`$CAMPAIGN_ID`** 부분을 실제 `campaignId` 값으로 변경 필요
+
+1. **기본 테스트**
+- 총 10,000 요청, 동시 100 클라이언트
+```bash
+hey -n 10000 -c 100 -m POST \
+  -H "Content-Type: application/json" \
+  -d '{"campaignId":"'"$CAMPAIGN_ID"'","userId":"user-1"}' \
+  http://localhost:8082/issue.v1.IssueService/IssueCoupon
+```
+
+2. 초당 QPS 제한 테스트
+
+- 20초 동안, 초당 최대 1,000 QPS
+
+```bash
+hey -z 20s -q 1000 -m POST \
+-H "Content-Type: application/json" \
+-d '{"campaignId":"'"$CAMPAIGN_ID"'","userId":"user-{{.RequestNumber}}"}' \
+http://localhost:8082/issue.v1.IssueService/IssueCoupon
+```
