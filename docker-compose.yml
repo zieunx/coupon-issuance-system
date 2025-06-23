@@ -22,40 +22,6 @@ services:
     networks:
       - coupon-network
 
-  admin-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        TARGET: cmd/admin-server
-    container_name: admin-server
-    env_file:
-      - .env.docker
-    ports:
-      - "${ADMIN_SERVER_PORT}:${ADMIN_SERVER_PORT}"
-    depends_on:
-      - mysql
-      - redis
-    networks:
-      - coupon-network
-
-  issue-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        TARGET: cmd/issue-server
-    container_name: issue-server
-    env_file:
-      - .env.docker
-    ports:
-      - "${ISSUE_SERVER_PORT}:${ISSUE_SERVER_PORT}"
-    depends_on:
-      - mysql
-      - redis
-    networks:
-      - coupon-network
-
 networks:
   coupon-network:
     driver: bridge
