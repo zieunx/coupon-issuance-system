@@ -3,9 +3,9 @@
 
 ## 🚀 빠른 시작
 
-1. Redis 실행
+1. 의존 서비스 실행 (MySQL, Redis)
 ```bash
-redis-server
+docker-compose up -d
 ```
 
 2. Admin 서버 실행
@@ -50,14 +50,14 @@ curl -X POST http://localhost:8081/admin.v1.CampaignService/GetCampaign \
 ```
 
 
-### 3) 캠페인 생성
+### 3) 쿠폰 발급
 
 ```bash
 curl -X POST http://localhost:8082/issue.v1.IssueService/IssueCoupon \
   -H "Content-Type: application/json" \
   -H "Connect-Protocol-Version: 1" \
   -d '{
-    "campaignId": "a48c8a2d-f144-4f11-a2c5-0c66bd74163d",
+    "campaignId": "생성된_campaignId_값",
     "userId": "test"
   }'
 
